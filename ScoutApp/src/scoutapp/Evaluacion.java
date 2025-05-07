@@ -8,6 +8,7 @@ package scoutapp;
  *
  * @author fernando.pedridomarino
  */
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -116,10 +117,35 @@ public class Evaluacion extends JFrame {
         JOptionPane.showMessageDialog(this, "Evaluación limpiada.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Método principal para probar la clase
+    // Método principal para ejecutar la aplicación
     public static void main(String[] args) {
-        // Crear un jugador de ejemplo
-        Jugador jugador = new Jugador(1, "Lionel Messi", "Delantero", 10, 35, "Inter Miami");
+        // Solicitar datos del jugador al usuario
+        String nombre = JOptionPane.showInputDialog("Ingrese el nombre del jugador:");
+        if (nombre == null || nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El nombre del jugador es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String posicion = JOptionPane.showInputDialog("Ingrese la posición del jugador:");
+        if (posicion == null || posicion.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La posición del jugador es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String edadStr = JOptionPane.showInputDialog("Ingrese la edad del jugador:");
+        int edad;
+        try {
+            edad = Integer.parseInt(edadStr);
+            if (edad <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "La edad ingresada no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear el objeto Jugador
+        Jugador jugador = new Jugador(1, nombre, posicion, edad, 0, "Sin equipo");
 
         // Crear y mostrar la evaluación
         new Evaluacion(jugador);
