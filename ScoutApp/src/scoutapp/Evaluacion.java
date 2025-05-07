@@ -8,43 +8,32 @@ package scoutapp;
  *
  * @author fernando.pedridomarino
  */
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * Clase que representa la evaluación de un jugador con interfaz gráfica.
- */
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Evaluacion extends JFrame {
+
     private Jugador jugador; // El jugador evaluado
-    private Map<AccionTecnica, Integer> valoraciones; // Mapa de acciones técnicas y sus valoraciones
-    private String observacionesGenerales; // Observaciones generales sobre el jugador
     private JTable accionesTable; // Tabla de acciones técnicas
     private JTextArea observacionesArea; // Área de texto para observaciones generales
+    private static final List<AccionTecnica> accionesTecnicas = new ArrayList<>(); // Lista de acciones técnicas
 
-    // Lista de acciones técnicas predefinidas
-    private static final List<AccionTecnica> accionesTecnicas = new ArrayList<>();
-
+    // Bloque estático para inicializar las acciones técnicas
     static {
-        // Inicializar acciones técnicas predefinidas
-            // Acciones técnicas ofensivas
         accionesTecnicas.add(new AccionTecnica(1, "Control orientado", "Ofensiva", "Control del balón orientado hacia el objetivo."));
         accionesTecnicas.add(new AccionTecnica(2, "Control en carrera", "Ofensiva", "Control del balón mientras se corre."));
         accionesTecnicas.add(new AccionTecnica(3, "Control bajo presión", "Ofensiva", "Control del balón en situaciones de presión del rival."));
-        
+
         accionesTecnicas.add(new AccionTecnica(4, "Conducción progresiva", "Ofensiva", "Avance con el balón hacia el objetivo."));
         accionesTecnicas.add(new AccionTecnica(5, "Conducción lateral o de retención", "Ofensiva", "Movimiento lateral con el balón para retenerlo."));
         accionesTecnicas.add(new AccionTecnica(6, "Conducción en transición", "Ofensiva", "Conducción rápida durante la transición."));
@@ -62,7 +51,7 @@ public class Evaluacion extends JFrame {
         accionesTecnicas.add(new AccionTecnica(16, "Tiros bloqueados", "Ofensiva", "Tiros bloqueados por defensores."));
         accionesTecnicas.add(new AccionTecnica(17, "Tiros desde fuera del área", "Ofensiva", "Intentos de gol desde larga distancia."));
         accionesTecnicas.add(new AccionTecnica(18, "Remates de cabeza", "Ofensiva", "Remates realizados con la cabeza."));
-        accionesTecnicas.add(new AccionTecnica(19, "Remates en el área chica", "Ofensiva", "Remates realizados desde el área chica."));
+        accionesTecnicas.add(new AccionTecnica(19, "Remates en el área pequeña", "Ofensiva", "Remates realizados desde el área chica."));
 
         accionesTecnicas.add(new AccionTecnica(20, "Intentos de regate", "Ofensiva", "Intentos de superar al rival en 1v1."));
         accionesTecnicas.add(new AccionTecnica(21, "Regates exitosos", "Ofensiva", "Regates completados con éxito."));
@@ -110,37 +99,27 @@ public class Evaluacion extends JFrame {
         accionesTecnicas.add(new AccionTecnica(54, "Cambios de orientación", "Especiales", "Pases largos para cambiar el punto de ataque."));
         accionesTecnicas.add(new AccionTecnica(55, "Pases de seguridad", "Especiales", "Pases realizados para mantener la posesión."));
         accionesTecnicas.add(new AccionTecnica(56, "Retención de balón en situaciones de ventaja", "Especiales", "Mantener el balón para asegurar la ventaja."));
-    
+
         // Agregar más acciones según sea necesario...
     }
 
-    // Método para obtener todas las acciones técnicas predefinidas
-    public static List<AccionTecnica> getAccionesTecnicas() {
-        return accionesTecnicas;
-    }
-
-    // Constructor para inicializar la evaluación
     public Evaluacion(Jugador jugador) {
         this.jugador = jugador;
-        this.valoraciones = new HashMap<>();
-        this.observacionesGenerales = "";
 
-        // Configuración de la ventana
         setTitle("Evaluación de Jugador: " + jugador.getNombre());
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Crear y configurar la tabla de acciones técnicas
+        // Configurar la tabla de acciones técnicas
         String[] columnNames = {"Acción Técnica", "Valoración"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         accionesTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(accionesTable);
 
-        // Agregar las acciones técnicas a la tabla
+        // Agregar acciones técnicas a la tabla
         for (AccionTecnica accion : accionesTecnicas) {
             tableModel.addRow(new Object[]{accion.getNombre(), 0}); // Valoración inicial: 0
-            valoraciones.put(accion, 0); // Registrar en el mapa
         }
 
         // Área de observaciones generales
@@ -153,59 +132,112 @@ public class Evaluacion extends JFrame {
         JPanel buttonPanel = new JPanel();
         JButton guardarButton = new JButton("Guardar Evaluación");
         JButton limpiarButton = new JButton("Limpiar");
+        JButton exportarPDFButton = new JButton("Exportar a PDF");
         buttonPanel.add(guardarButton);
         buttonPanel.add(limpiarButton);
+        buttonPanel.add(exportarPDFButton);
 
-        // Acción del botón "Guardar Evaluación"
+        // Acciones de los botones
         guardarButton.addActionListener(e -> guardarEvaluacion());
-
-        // Acción del botón "Limpiar"
         limpiarButton.addActionListener(e -> limpiarEvaluacion());
+        exportarPDFButton.addActionListener(e -> exportarEvaluacionPDF());
 
         // Agregar componentes a la ventana
         add(tableScrollPane, BorderLayout.CENTER);
         add(observacionesPanel, BorderLayout.SOUTH);
         add(buttonPanel, BorderLayout.NORTH);
 
-        // Hacer visible la ventana
         setVisible(true);
     }
 
-    // Método para guardar la evaluación
     private void guardarEvaluacion() {
-        DefaultTableModel tableModel = (DefaultTableModel) accionesTable.getModel();
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String nombreAccion = (String) tableModel.getValueAt(i, 0);
-            try {
-                int valoracion = Integer.parseInt(tableModel.getValueAt(i, 1).toString());
-                if (valoracion < 0 || valoracion > 10) {
-                    throw new NumberFormatException();
-                }
-
-                // Buscar la acción técnica correspondiente
-                for (AccionTecnica accion : valoraciones.keySet()) {
-                    if (accion.getNombre().equals(nombreAccion)) {
-                        valoraciones.put(accion, valoracion);
-                    }
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Valoración inválida para la acción: " + nombreAccion + ". Debe estar entre 0 y 10.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        // Guardar las observaciones generales
-        observacionesGenerales = observacionesArea.getText();
         JOptionPane.showMessageDialog(this, "Evaluación guardada con éxito.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Método para limpiar la evaluación
     private void limpiarEvaluacion() {
         DefaultTableModel tableModel = (DefaultTableModel) accionesTable.getModel();
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             tableModel.setValueAt(0, i, 1); // Reiniciar las valoraciones a 0
         }
-        observacionesArea.setText(""); // Limpiar observaciones
+        observacionesArea.setText(""); // Limpiar observaciones generales
         JOptionPane.showMessageDialog(this, "Evaluación limpiada.", "Información", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void exportarEvaluacionPDF() {
+        // Configurar el cuadro de diálogo para guardar el archivo
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Selecciona la carpeta y el nombre del archivo");
+        fileChooser.setSelectedFile(new File("evaluacion_jugador.pdf")); // Nombre de archivo predeterminado
+        int result = fileChooser.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            String rutaPDF = selectedFile.getAbsolutePath();
+
+            // Crear el PDF
+            try (PDDocument document = new PDDocument()) {
+                PDPage page = new PDPage();
+                document.addPage(page);
+
+                // Cargar la fuente personalizada
+                File fontFile = new File("src/scoutapp/resources/fonts/Roboto-Italic.ttf");
+                if (!fontFile.exists()) {
+                    JOptionPane.showMessageDialog(this, "No se encontró el archivo de fuente: " + fontFile.getAbsolutePath(), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                PDType0Font customFont = PDType0Font.load(document, fontFile);
+
+                try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                    contentStream.setFont(customFont, 16);
+                    contentStream.beginText();
+                    contentStream.setLeading(20f);
+                    contentStream.newLineAtOffset(50, 750);
+
+                    // Título
+                    contentStream.showText("Informe de Evaluación");
+                    contentStream.newLine();
+                    contentStream.newLine();
+
+                    // Información del jugador
+                    contentStream.setFont(customFont, 12);
+                    contentStream.showText("Jugador: " + jugador.getNombre());
+                    contentStream.newLine();
+                    contentStream.showText("Posición: " + jugador.getPosicion());
+                    contentStream.newLine();
+                    contentStream.showText("Dorsal: " + jugador.getDorsal());
+                    contentStream.newLine();
+                    contentStream.showText("Edad: " + jugador.getEdad()); // Se asegura que la edad del jugador se extrae correctamente
+                    contentStream.newLine();
+                    contentStream.showText("Equipo: " + jugador.getEquipo());
+                    contentStream.newLine();
+                    contentStream.newLine();
+
+                    // Acciones técnicas y valoraciones
+                    contentStream.showText("Acciones Técnicas:");
+                    contentStream.newLine();
+                    DefaultTableModel tableModel = (DefaultTableModel) accionesTable.getModel();
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String accion = (String) tableModel.getValueAt(i, 0);
+                        String valoracion = tableModel.getValueAt(i, 1).toString();
+                        contentStream.showText("- " + accion + ": " + valoracion);
+                        contentStream.newLine();
+                    }
+                    contentStream.newLine();
+
+                    // Observaciones generales
+                    contentStream.showText("Observaciones Generales:");
+                    contentStream.newLine();
+                    contentStream.showText(observacionesArea.getText());
+                    contentStream.newLine();
+
+                    contentStream.endText();
+                }
+
+                document.save(rutaPDF);
+                JOptionPane.showMessageDialog(this, "Evaluación exportada a PDF con éxito en: " + rutaPDF, "Información", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al exportar la evaluación a PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }
