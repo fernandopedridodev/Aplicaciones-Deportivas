@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tv_launcher_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/launcher_title"
+        style="@style/TitleStyle"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/tv_select_option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_option"
+        style="@style/SubtitleStyle"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_evaluation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/launcher_option_evaluation"
+        style="@style/ButtonStyle"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_exit"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/launcher_option_exit"
+        style="@style/ButtonStyle"
+        app:cornerRadius="8dp" />
+
+</LinearLayout>

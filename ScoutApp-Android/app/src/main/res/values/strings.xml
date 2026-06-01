@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScoutApp</string>
+    <string name="app_title">Evaluador de Jugadores</string>
+    <string name="launcher_option_evaluation">Ejecutar Evaluación</string>
+    <string name="launcher_option_exit">Salir</string>
+    <string name="launcher_title">ScoutApp Launcher</string>
+    <string name="select_option">Selecciona la opción a ejecutar:</string>
+    
+    <!-- Main Activity Strings -->
+    <string name="hint_player_name">Nombre del jugador</string>
+    <string name="hint_player_position">Posición del jugador</string>
+    <string name="hint_player_age">Edad del jugador</string>
+    <string name="hint_player_number">Dorsal del jugador</string>
+    <string name="hint_player_team">Equipo del jugador</string>
+    <string name="btn_continue">Continuar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="error_empty_field">Este campo es obligatorio</string>
+    <string name="error_invalid_age">Edad inválida</string>
+    <string name="error_invalid_number">Dorsal inválido</string>
+    
+    <!-- Evaluation Activity Strings -->
+    <string name="title_evaluation">Evaluación de Jugador</string>
+    <string name="general_observations">Observaciones Generales</string>
+    <string name="btn_save">Guardar Evaluación</string>
+    <string name="btn_clear">Limpiar</string>
+    <string name="btn_export_pdf">Exportar a PDF</string>
+    <string name="success_saved">Evaluación guardada con éxito</string>
+    <string name="success_cleared">Evaluación limpiada</string>
+    <string name="success_exported">Evaluación exportada a PDF</string>
+    <string name="error_export">Error al exportar a PDF</string>
+    <string name="evaluation_report">Informe de Evaluación</string>
+</resources>
