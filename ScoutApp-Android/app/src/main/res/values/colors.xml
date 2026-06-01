@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary colors -->
+    <color name="primary_color">#1976D2</color>
+    <color name="primary_dark_color">#1565C0</color>
+    <color name="primary_light_color">#42A5F5</color>
+
+    <!-- Secondary colors -->
+    <color name="secondary_color">#FFA500</color>
+    <color name="secondary_dark_color">#FF8C00</color>
+    <color name="secondary_light_color">#FFB74D</color>
+
+    <!-- System colors -->
+    <color name="error_color">#F44336</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="warning_color">#FF9800</color>
+
+    <!-- Background and surface -->
+    <color name="background_color">#FAFAFA</color>
+    <color name="surface_color">#FFFFFF</color>
+
+    <!-- Text colors -->
+    <color name="primary_text_color">#212121</color>
+    <color name="secondary_text_color">#757575</color>
+    <color name="hint_text_color">#BDBDBD</color>
+
+    <!-- Other colors -->
+    <color name="divider_color">#EEEEEE</color>
+    <color name="disabled_color">#CCCCCC</color>
+</resources>
